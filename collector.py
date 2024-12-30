@@ -7,14 +7,15 @@ from datetime import datetime
 # Set parameters
 ENVIRONMENT = "www"
 CHANNELS = [
-    "book.BTC-PERPETUAL.none.20.100ms",
-    "book.ETH-PERPETUAL.none.20.100ms"
+    "book.BTC-PERPETUAL.none.20.100ms"
 ]
 MAX_FILE_SIZE_MB = 95  # GitHub has 100MB file size limit, keeping buffer
 
 def get_new_filename():
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    return f'updates_{timestamp}.json'
+    # Create data directory if it doesn't exist
+    os.makedirs('data', exist_ok=True)
+    return os.path.join('data', f'updates_{timestamp}.json') # git rm *.json to remove al json files
 
 async def save_orderbook_data(runtime_minutes=350):  # ~5.8 hours
     msg = {
