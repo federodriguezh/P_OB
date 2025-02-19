@@ -17,7 +17,7 @@ def get_new_filename():
     os.makedirs('data', exist_ok=True)
     return os.path.join('data', f'updates_{timestamp}.json') # git rm *.json to remove al json files
 
-async def save_orderbook_data(runtime_minutes=350):  # ~5.8 hours
+async def save_orderbook_data(runtime_minutes=300):  # ~5 hours
     msg = {
         "jsonrpc": "2.0",
         "id": 1,

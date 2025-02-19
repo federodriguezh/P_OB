@@ -1,15 +1,15 @@
-name: Orderbook Data Collection
+name: Orderbook Data Collection and Cleanup
 
 on:
   schedule:
-    # Run every 5 hours to ensure overlap
-    - cron: '0 */5 * * *'
+    # Run collector every 4 hours
+    - cron: '0 */4 * * *'
   workflow_dispatch:  # Allow manual triggers
 
 jobs:
-  collect_data:
+  collect_and_cleanup:
     runs-on: ubuntu-latest
-    timeout-minutes: 360  # 6 hours max
+    timeout-minutes: 350  # ~5.8 hours max
 
     steps:
     - uses: actions/checkout@v3
@@ -24,7 +24,16 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install websockets
+        pip install websockets kaggle
+
+    - name: Configure Kaggle
+      env:
+        KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+        KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+      run: |
+        mkdir -p ~/.kaggle
+        echo "{\"username\":\"$KAGGLE_USERNAME\",\"key\":\"$KAGGLE_KEY\"}" > ~/.kaggle/kaggle.json
+        chmod 600 ~/.kaggle/kaggle.json
 
     - name: Run collector
       run: python collector.py
@@ -35,4 +44,7 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git pull
         git add data/*.json
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Add orderbook data [skip ci]" && git push)
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update orderbook data [skip ci]" && git push)
+
+    - name: Run cleanup
+      run: python cleanup.py
