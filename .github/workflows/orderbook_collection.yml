@@ -2,8 +2,8 @@ name: Orderbook Data Collection and Cleanup
 
 on:
   schedule:
-    # Run collector every 4 hours
-    - cron: '0 */4 * * *'
+    # Run collector every 5 hours
+    - cron: '0 */5 * * *'
   workflow_dispatch:  # Allow manual triggers
 
 jobs:
